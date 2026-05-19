@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esmile Shop - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', sans-serif; background: #FAFAFB; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 40px 20px; box-sizing: border-box; }
+        
+        .admin-card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 100%; max-width: 500px; margin-bottom: 30px; }
+        .admin-card h2 { text-align: center; color: #1e293b; margin-bottom: 25px; }
+        
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 14px; color: #64748b; margin-bottom: 5px; }
+        .input-group input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-family: 'Kanit'; outline: none; }
+        .input-group input:focus { border-color: #4f46e5; }
+        
+        .btn-submit { width: 100%; padding: 14px; background: #4f46e5; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-submit:hover { background: #4338ca; }
+        .btn-logout { background: #fee2e2; color: #ef4444; margin-top: 15px; }
+        .btn-logout:hover { background: #f87171; color: white; }
+        
+        .back-link { display: block; text-align: center; margin-top: 20px; color: #94a3b8; text-decoration: none; font-size: 14px; }
+        .back-link:hover { color: #4f46e5; }
+
+        .product-list-container { width: 100%; max-width: 500px; }
+        .product-list-container h3 { color: #334155; margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        
+        .admin-product-item { display: flex; align-items: center; justify-content: space-between; background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .product-info-wrap { display: flex; align-items: center; gap: 15px; }
+        .admin-product-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; background: #f8fafc; }
+        .product-info { display: flex; flex-direction: column; }
+        .product-info strong { color: #1e293b; font-size: 14px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-info small { color: #ec4899; font-weight: 500; font-size: 13px; }
+        
+        .btn-delete { background: #fee2e2; color: #ef4444; border: none; padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-delete:hover { background: #f87171; color: white; }
+
+        /* ซ่อนแดชบอร์ดจัดการไว้ก่อนล็อกอิน */
+        #adminDashboard { display: none; width: 100%; flex-direction: column; align-items: center; }
+        #loginSection { display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. ส่วนของฟอร์มเข้าสู่ระบบ (Login) -->
+    <div class="admin-card" id="loginSection">
+        <h2>เข้าสู่ระบบ Admin ของจริง</h2>
+        <div class="input-group">
+            <label>อีเมลแอดมิน (Email)</label>
+            <input type="email" id="adminEmail" placeholder="เช่น admin@esmile.com">
+        </div>
+        <div class="input-group">
+            <label>รหัสผ่าน (Password)</label>
+            <input type="password" id="adminPassword" placeholder="******">
+        </div>
+        <button class="btn-submit" id="btnLogin">เข้าสู่ระบบ</button>
+        <a href="index.html" class="back-link">← กลับหน้าหลัก</a>
+    </div>
+
+    <!-- 2. ส่วนควบคุมร้านค้า (Dashboard) -> จะปรากฏหลังจากยืนยันตัวตนสำเร็จ -->
+    <div id="adminDashboard">
+        <div class="admin-card">
+            <h2>เพิ่มสินค้าใหม่ (ระบบออนไลน์)</h2>
+            <div class="input-group">
+                <label>URL รูปภาพสินค้า (Link รูป)</label>
+                <input type="text" id="imgUrl" placeholder="https://...">
+            </div>
+            <div class="input-group">
+                <label>ชื่อสินค้า</label>
+                <input type="text" id="prodName" placeholder="เช่น สมาร์ททีวี 55 นิ้ว">
+            </div>
+            <div class="input-group">
+                <label>ราคาขายจริง (บาท)</label>
+                <input type="number" id="prodPrice" placeholder="เช่น 12990">
+            </div>
+            <div class="input-group">
+                <label>ราคาเต็มก่อนลด (บาท - ถ้าไม่มีให้เว้นว่าง)</label>
+                <input type="number" id="prodOldPrice" placeholder="เช่น 15990">
+            </div>
+            <button class="btn-submit" id="btnSave">บันทึกสินค้า</button>
+            <button class="btn-submit btn-logout" id="btnLogout">ออกจากระบบ</button>
+            <a href="index.html" class="back-link">← กลับหน้าหลัก</a>
+        </div>
+
+        <div class="product-list-container">
+            <h3>จัดการสินค้าปัจจุบันในระบบคลาวด์</h3>
+            <div id="adminProductList"></div>
+        </div>
+    </div>
+
+    <!-- Firebase Script (Moduled) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // *** สำคัญ: เปลี่ยนค่าในนี้ให้เป็นข้อมูลที่ได้มาจากโปรเจกต์ Firebase ของคุณเองนะครับ ***
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-fcWKpuu0O0tGbogIS4yoTYITkEIiCXA",
+  authDomain: "esmile-shop-27d5c.firebaseapp.com",
+  projectId: "esmile-shop-27d5c",
+  storageBucket: "esmile-shop-27d5c.firebasestorage.app",
+  messagingSenderId: "572820239765",
+  appId: "1:572820239765:web:c3a726466d8dd26ace329c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const productsCollection = collection(db, "products");
+
+        // ตรวจสอบสถานะการล็อกอินแบบเรียลไทม์
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'flex';
+                renderAdminProducts();
+            } else {
+                document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('adminDashboard').style.display = 'none';
+            }
+        });
+
+        // ฟังก์ชันล็อกอินเข้าสู่ระบบ
+        document.getElementById('btnLogin').addEventListener('click', async () => {
+            const email = document.getElementById('adminEmail').value;
+            const pass = document.getElementById('adminPassword').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                document.getElementById('adminEmail').value = '';
+                document.getElementById('adminPassword').value = '';
+            } catch (error) {
+                alert('อีเมลหรือรหัสผ่านระบบแอดมินไม่ถูกต้องครับ!');
+            }
+        });
+
+        // ฟังก์ชันออกจากระบบ
+        document.getElementById('btnLogout').addEventListener('click', async () => {
+            if (confirm('ยืนยันการออกจากระบบใช่ไหมครับ?')) {
+                await signOut(auth);
+            }
+        });
+
+        // ฟังก์ชันแสดงรายการสินค้าที่มีในระบบออนไลน์
+        async function renderAdminProducts() {
+            const listContainer = document.getElementById('adminProductList');
+            listContainer.innerHTML = '<p style="text-align:center; color:#94a3b8;">กำลังดึงฐานข้อมูลสินค้า...</p>';
+            
+            try {
+                const querySnapshot = await getDocs(productsCollection);
+                if (querySnapshot.empty) {
+                    listContainer.innerHTML = '<p style="text-align:center; color:#94a3b8; font-size:14px;">ยังไม่มีสินค้าบนคลาวด์</p>';
+                    return;
+                }
+
+                let html = '';
+                querySnapshot.forEach((documentNode) => {
+                    const p = documentNode.data();
+                    const docId = documentNode.id;
+                    html += `
+                    <div class="admin-product-item">
+                        <div class="product-info-wrap">
+                            <img src="${p.img}" alt="${p.name}">
+                            <div class="product-info">
+                                <strong>${p.name}</strong>
+                                <small>฿${p.price}</small>
+                            </div>
+                        </div>
+                        <button class="btn-delete" data-id="${docId}">ลบ</button>
+                    </div>
+                    `;
+                });
+                listContainer.innerHTML = html;
+
+                // ผูกอีเวนต์ปุ่มลบให้กับทุกชิ้น
+                document.querySelectorAll('.btn-delete').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const docId = e.target.getAttribute('data-id');
+                        deleteProduct(docId);
+                    });
+                });
+            } catch (err) {
+                listContainer.innerHTML = '<p style="color:red; text-align:center;">ไม่สามารถโหลดฐานข้อมูลได้</p>';
+            }
+        }
+
+        // ฟังก์ชันเพิ่มสินค้าออนไลน์
+        document.getElementById('btnSave').addEventListener('click', async () => {
+            let img = document.getElementById('imgUrl').value;
+            let name = document.getElementById('prodName').value;
+            let price = document.getElementById('prodPrice').value;
+            let oldPrice = document.getElementById('prodOldPrice').value;
+
+            if(!img || !name || !price) {
+                alert('กรุณากรอกลิงก์รูปสินค้า, ชื่อ และราคาขายจริงให้ครบถ้วนครับ');
+                return;
+            }
+
+            let newProduct = { 
+                img: img, 
+                name: name, 
+                price: Number(price).toLocaleString(),
+                oldPrice: oldPrice ? Number(oldPrice).toLocaleString() : '' 
+            };
+
+            try {
+                await addDoc(productsCollection, newProduct);
+                alert('อัปโหลดสินค้าขึ้นหน้าเว็บเรียบร้อย!');
+                document.querySelectorAll('#adminDashboard input').forEach(input => input.value = '');
+                renderAdminProducts();
+            } catch (error) {
+                alert('เซิร์ฟเวอร์ปฏิเสธการเพิ่มข้อมูล (กรุณาเช็คการเข้าสู่ระบบ)');
+            }
+        });
+
+        // ฟังก์ชันลบสินค้าบน Firebase
+        async function deleteProduct(docId) {
+            if(confirm('คุณแน่ใจหรือไม่ว่าต้องการลบสินค้านี้ถาวร?')) {
+                try {
+                    await deleteDoc(doc(db, "products", docId));
+                    renderAdminProducts();
+                } catch (error) {
+                    alert('ไม่สามารถลบข้อมูลได้เนื่องจากสิทธิ์ไม่ถูกต้อง');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
